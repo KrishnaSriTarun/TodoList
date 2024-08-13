@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>To-Do List</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: lightgray;
+            background-image: url("https://www.stylist.co.uk/images/app/uploads/2021/06/01164914/to-do-list-1680x880.jpg?w=1680&h=880&fit=max&auto=format%2Ccompress");
+        }
+
+        form {
+            display: inline-block;
+        }
+
+        .todo-list {
+            position: relative;
+            right: 350px;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 50%;
+            border: 0px solid #000000;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 25px;
+            padding: 10px;
+            border-bottom: 1px solid #cccccc;
+        }
+
+        button {
+            background-color: #4CAF50; /* green */
+            color: white;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: blue; /* darker green */
+        }
+
+        button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        input {
+            border-radius: 5px;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            ul {
+                margin: 20px 0;
+            }
+        }
+
+        @media only screen and (max-width: 600px) {
+            body {
+                font-size: 16px;
+            }
+        }
+    </style>
+    <script>
+        function updateTime() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+    
+            // Add leading zeros if necessary
+            hours = (hours < 10 ? "0" : "") + hours;
+            minutes = (minutes < 10 ? "0" : "") + minutes;
+            seconds = (seconds < 10 ? "0" : "") + seconds;
+    
+            var timeString = hours + ":" + minutes + ":" + seconds;
+            document.getElementById("clock").innerHTML = timeString;
+    
+            setTimeout(updateTime, 1000); // Update every 1 second
+        }
+    
+        updateTime(); // Call the function to start updating the time
+    </script>
+</head>
+<body>
+    <h1>To-Do List <span id="clock"></span></h1>
+
+    <div class="todo-list">
+        <center>
+            <form action="{{ url_for('add_todo') }}" method="POST">
+                <label for="todo">New Todo:</label>
+                <input type="text" name="todo" id="todo" placeholder="Write something" required>
+                <button type="submit">Add</button>
+            </form>
+            <br>
+            <br>
+            <ul>
+                {% for todo in todos %}
+                <li {% if todo['done'] %} style="text-decoration: line-through;" {% endif %}>
+                    {{ todo['todo'] }}
+                    {% if not todo['done'] %}
+                    <br>
+                    <br>
+                    <form action="{{ url_for('mark_done', index=loop.index0) }}" method="POST">
+                        <button type="submit">Done</button>
+                    </form> 
+                    {% endif %}
+                    <form action="{{ url_for('delete', index=loop.index0) }}" method="POST">
+                        <button type="submit" style="background-color: red;">Delete</button>
+                    </form>
+                    <br>
+                    <br>
+                </li>
+                {% endfor %}
+            </ul>
+        </center>
+    </div>
+</body>
+</html>
